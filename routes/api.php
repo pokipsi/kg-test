@@ -16,3 +16,14 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('users', "UserController@index");
+Route::post('user/register', "UserController@register");
+Route::post('user/subscribe', "UserController@subscribe");
+
+Route::post('user/activate', "UserController@activate");
+Route::post('user/deactivate', "UserController@deactivate");
+
+Route::get('user/unsubscribe', "UserController@unsubscribe");
+Route::get('user/require-reactivation', "UserController@requireReactivation");
+
