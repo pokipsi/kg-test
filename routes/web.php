@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/paypal-test', function () {
+    return view('paypal-test');
+});
+
 Route::get('email-welcome', function(){
     $data['bodyData'] = [
         'link' => 'http://www.google.com'

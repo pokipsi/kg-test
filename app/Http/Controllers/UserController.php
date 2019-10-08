@@ -11,9 +11,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::withTrashed()->paginate(5);
+        $users = User::withTrashed()->paginate(10);
 
-        return new UserResource($users);
+        return UserResource::collection($users);
     }
 
     public function register(Request $request){
