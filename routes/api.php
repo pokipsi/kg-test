@@ -27,3 +27,11 @@ Route::post('user/deactivate', "UserController@deactivate");
 Route::get('user/unsubscribe', "UserController@unsubscribe");
 Route::get('user/require-reactivation', "UserController@requireReactivation");
 
+
+//PayPal
+Route::post('paypal/order/create', "PayPalController@index");
+Route::post('paypal/return', function(){})->name("paypal-return");
+Route::post('paypal/cancel', function(){})->name("paypal-cancel");
+
+
+
