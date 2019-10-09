@@ -29,14 +29,12 @@ class UsersTableSeeder extends Seeder
             'email' => Str::random(10).'@gmail.com',
             'password' => bcrypt('password'),
             'subscribed' => true,
-            'order_id'=>'1234567'
         ]);
 
         DB::table('users')->insert([
             'email' => Str::random(10).'@gmail.com',
             'password' => bcrypt('password'),
             'subscribed' => true,
-            'order_id'=>'1234567',
             'deleted_at' => Carbon::now()
         ]);
 
@@ -44,7 +42,6 @@ class UsersTableSeeder extends Seeder
             'email' => Str::random(10).'@gmail.com',
             'password' => bcrypt('password'),
             'subscribed' => true,
-            'order_id'=>'1234567',
             'required_reactivation' => true
         ]);
     }

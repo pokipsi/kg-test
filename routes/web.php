@@ -15,30 +15,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/paypal-test', function () {
-    return view('paypal-test');
+Route::get('user/unsubscribe/{id}', "UserController@unsubscribe")->name('unsubscribe')->middleware('signed');
+Route::get('user/reactivate/{id}', "UserController@reactivate")->name('reactivate')->middleware('signed');
+Route::get('user/reactivated', function(){
+    return view('reactivated');
 });
-
-Route::get('email-welcome', function(){
-    $data['bodyData'] = [
-        'link' => 'http://www.google.com'
-    ];
-    $data['mailto'] = 'djurkaaleksandar@gmail.com';
-    $data['subject'] = 'KG Welcome';
-    $data['viewName'] = 'welcome';
-
-    dispatch(new App\Jobs\SendEmailJob($data));
-    dd('done');
-});
-
-Route::get('email-reactivate', function(){
-    $data['bodyData'] = [
-        'link' => 'http://www.google.com'
-    ];
-    $data['mailto'] = 'djurkaaleksandar@gmail.com';
-    $data['subject'] = 'KG Reactivation';
-    $data['viewName'] = 'reactivate';
-
-    dispatch(new App\Jobs\SendEmailJob($data));
-    dd('done');
+Route::get('user/unsubscribed', function(){
+    return view('unsubscribed');
 });

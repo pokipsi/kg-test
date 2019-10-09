@@ -19,6 +19,8 @@ class CreateOrder
         $returnUrl = URL::signedRoute('paypal-return');
         $cancelUrl = URL::signedRoute('paypal-cancel');
 
+        $amount = 0.01;
+
         return array(
             'intent' => 'CAPTURE',
             'application_context' =>
@@ -40,13 +42,13 @@ class CreateOrder
                             'amount' =>
                                 array(
                                     'currency_code' => 'USD',
-                                    'value' => '0.01',
+                                    'value' => $amount,
                                     'breakdown' =>
                                         array(
                                             'item_total' =>
                                                 array(
                                                     'currency_code' => 'USD',
-                                                    'value' => '0.01',
+                                                    'value' => $amount,
                                                 )
                                         ),
                                 ),
@@ -59,7 +61,7 @@ class CreateOrder
                                             'unit_amount' =>
                                                 array(
                                                     'currency_code' => 'USD',
-                                                    'value' => '0.01',
+                                                    'value' => $amount,
                                                 ),
                                             'quantity' => '1'
                                         ),

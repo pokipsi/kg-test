@@ -18,18 +18,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('users', "UserController@index");
+Route::post('user/check', "UserController@check");
 Route::post('user/register', "UserController@register");
 Route::post('user/subscribe', "UserController@subscribe");
+Route::post('user/require-reactivation', "UserController@requireReactivation");
 
 Route::post('user/activate', "UserController@activate");
 Route::post('user/deactivate', "UserController@deactivate");
 
-Route::get('user/unsubscribe', "UserController@unsubscribe");
-Route::get('user/require-reactivation', "UserController@requireReactivation");
-
-
 //PayPal
-Route::post('paypal/order/create', "PayPalController@index");
+Route::post('paypal/order/create', "PayPalController@create");
+Route::post('paypal/order/capture', "PayPalController@capture");
 Route::post('paypal/return', function(){})->name("paypal-return");
 Route::post('paypal/cancel', function(){})->name("paypal-cancel");
 

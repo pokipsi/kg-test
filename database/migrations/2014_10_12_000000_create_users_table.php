@@ -17,7 +17,6 @@ class CreateUsersTable extends Migration
             $table->bigIncrements('id');
             $table->string('email')->unique();
             $table->boolean('subscribed')->default(false);
-            $table->string('order_id')->default('');
             $table->boolean('required_reactivation')->default(false);
             $table->boolean('admin')->default(false);
             $table->timestamp('deleted_at')->nullable();

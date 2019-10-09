@@ -1,8 +1,8 @@
 <?php
 
-namespace Sample\CaptureIntentExamples;
+namespace App\Helpers\PayPal\CaptureIntent;
 
-use Sample\PayPalClient;
+use \App\Helpers\PayPal\Client as PayPalClient;
 use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
 
 class CaptureOrder {

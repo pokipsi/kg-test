@@ -17,16 +17,11 @@
                 <script>
                     //fetch user data from server
                     let user = {
-                        id: 8,
-                        password: "$2y$10$7D8tC0VhKLwNKL3gy/k7MOhliqbXH/4edE5TuquD8Q8sORInoPqCa"
+                        email: "user123@gmail.com"
                     }
                     paypal.Buttons({
                         createOrder: function() {
                             return fetch('/api/paypal/order/create', {
-                                body: JSON.stringify({ 
-                                    user_id: user.id,
-                                    password: user.password
-                                }),
                                 method: 'post',
                                 headers: {
                                     'content-type': 'application/json'
@@ -43,12 +38,21 @@
                                 }
                             });
                         },
-                        onApprove: function(data, actions) {
-                            return actions.order.capture().then(function(details) {
+                        onApprove: function(data) {
+                            return fetch('/api/paypal/order/capture', {
+                                headers: {
+                                    'content-type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    email: user.email,
+                                    order_id: data.orderID
+                                }),
+                                method: 'post'
+                            }).then(function(res) {
+                                return res.json();
+                            }).then(function(details) {
                                 console.log(details);
-                                alert('Transaction completed by ' + details.payer.name.given_name);
-                                // Call your server to save the transaction
-                            });
+                            })
                         }
                     }).render('#paypal-button-container');
                 </script>
@@ -56,3 +60,4 @@
         </div>
     </body>
 </html>
+
