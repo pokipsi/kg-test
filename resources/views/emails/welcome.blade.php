@@ -8,6 +8,6 @@
 
         <p>You have successfully subscribed!</p>
 
-        <p>Unsubscribe <a href="{{ $data['link'] }}">here</a></p>
+        <p>Unsubscribe <a href="{{ $data['unsubscribeUrl'] }}">here</a></p>
     </body>
 </html>

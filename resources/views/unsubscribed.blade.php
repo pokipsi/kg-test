@@ -16,7 +16,8 @@
         <script src="https://www.paypal.com/sdk/js?client-id=sb"></script>
     </head>
     <body>
-        <div id="app"></div>
-        <script src="{{ asset('js/app.js') }}"></script>
+        <div class="alert alert-primary" role="alert">
+            Unsubscribed succesfully! <a href="/">Home</a>
+        </div>
     </body>
 </html>

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\User;
 use App\Http\Resources\User as UserResource;
+use Illuminate\Support\Facades\URL;
+use \App\Jobs\SendEmailJob;
 
 class UserController extends Controller
 {
@@ -14,6 +16,23 @@ class UserController extends Controller
         $users = User::withTrashed()->paginate(10);
 
         return UserResource::collection($users);
+    }
+
+    public function check(Request $request){
+        $this->validate($request, [
+            'email' => 'required|string|email|max:255'
+        ]);
+
+        $email = $request['email'];
+
+        $user = User::withTrashed()->where('email', $email)->first();
+
+        if($user){
+            return $user;
+        }else return [
+            "status" => 0,
+            "msg" => "User doesn't exist"
+        ];
     }
 
     public function register(Request $request){
@@ -80,55 +99,41 @@ class UserController extends Controller
 
         $id = $request['id'];
 
-        $user = User::withTrashed()->where('id', $id)->first();
+        $user = User::withTrashed()->where(['id' => $id])->first();
 
         if($user){
 
             if($user->trashed()){
-                    
-                $user->restore();
                  
                 $user->update(['required_reactivation' => true]);
 
+                $emailParams = [
+                    'mailto' => $user->email,
+                    'bodyData' => [
+                        'reactivateUrl' => URL::signedRoute('reactivate', ['id'=>$user->id])
+                    ],
+                    'viewName' => 'reactivate',
+                    'subject' => 'Reactivate subscription'
+                ];
+                dispatch(new SendEmailJob($emailParams));
+
             }
 
-        }        
+        }
         
         return $user;
     }
 
-    public function unsubscribe(Request $request){
+    public function unsubscribe($id){
 
-        $res = $this->validate($request, [
-            'id'=> 'required',
-            'p' => 'required'
-        ]);
-
-        $ret = User::where('id', $request['id'])
-          ->where('password', $request['p'])
+        $ret = User::where('id', $id)
           ->delete();
 
-        if($ret){
-            $error = false;
-            $msg = 'User unsubscribed.';
-        }else{
-            $error = true;
-            $msg = 'User not unsubscribed. Something went wrong.';
-        }
-
-        return [
-            "error" => $error,
-            "msg" => $msg
-        ];
+        return redirect('user/unsubscribed');
 
     }
 
-    public function activate(Request $request){
-        $this->validate($request, [
-            'id' => 'required|integer'
-        ]);
-
-        $id = $request['id'];
+    public function reactivate(Request $request, $id){
 
         $user = User::withTrashed()->where('id', $id)->first();
 
@@ -148,8 +153,8 @@ class UserController extends Controller
             }
 
         }        
-        
-        return $user;
+
+        return redirect('user/reactivated');
     }
 
     public function deactivate(Request $request){

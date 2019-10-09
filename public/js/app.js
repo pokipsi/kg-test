@@ -1838,6 +1838,7 @@ module.exports = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _js_paypal_integration__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @/js/paypal-integration */ "./resources/js/paypal-integration.js");
 //
 //
 //
@@ -1862,19 +1863,137 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "homepage",
   data: function data() {
     return {
       error: null,
-      email: null
+      email: null,
+      showPayment: false,
+      headerText: '',
+      subscribed: false,
+      reactivate_question: false,
+      email_sent_info: false,
+      user: null
     };
   },
+  computed: {},
   methods: {
+    validateEmail: function validateEmail() {
+      if (!this.email) {
+        this.error = 'Email required.';
+      } else if (!this.validEmail(this.email)) {
+        this.error = 'Valid email required.';
+      } else {
+        this.error = null;
+      }
+    },
     validateForm: function validateForm(e) {
-      alert("Implement validation");
+      var _this = this;
+
+      this.validateEmail();
+      this.subscribed = false;
+      this.reactivate_question = false;
+
+      if (!this.error) {
+        fetch('api/user/check', {
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: this.email
+          }),
+          method: 'post'
+        }).then(function (data) {
+          return data.json();
+        }).then(function (data) {
+          if (data.subscribed) {
+            if (data.deleted_at == null) {
+              console.log("already subscribed");
+              _this.subscribed = true;
+            } else {
+              _this.user = data;
+              console.log("reactivate?");
+              _this.reactivate_question = true;
+            }
+          } else {
+            _this.showPayment = true;
+            _this.headerText = 'Payment';
+
+            _this.renderPayPal();
+          }
+        });
+      }
+
       e.preventDefault();
+    },
+    renderPayPal: function renderPayPal() {
+      var _this2 = this;
+
+      _js_paypal_integration__WEBPACK_IMPORTED_MODULE_0__["default"].render({
+        onApprove: function onApprove(data) {
+          switch (data.status) {
+            case 1:
+              _this2.subscribed = true;
+              break;
+
+            case 2:
+              _this2.subscribed = true;
+              break;
+          }
+        },
+        payload: {
+          email: this.email
+        }
+      });
+    },
+    reactivate: function reactivate() {
+      var _this3 = this;
+
+      fetch('api/user/require-reactivation', {
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: this.user.id,
+          password: this.user.password
+        }),
+        method: 'post'
+      }).then(function (data) {
+        return data.json();
+      }).then(function (data) {
+        _this3.user = null;
+        _this3.reactivate_question = false;
+        _this3.email_sent_info = false;
+        console.log(data);
+      });
+    },
+    validEmail: function validEmail(email) {
+      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
     }
+  },
+  mounted: function mounted() {
+    this.headerText = 'Welcome';
   }
 });
 
@@ -19521,51 +19640,172 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "row justify-content-center" }, [
     _c("div", { staticClass: "col-sm-12 col-md-8 col-lg-6 mt-5 " }, [
-      _vm._m(0),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c("h1", [_vm._v(_vm._s(_vm.headerText))])
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "wrapper" }, [
         _c("div", { staticClass: "row" }, [
           _c("div", { staticClass: "col-12" }, [
+            _vm.subscribed
+              ? _c(
+                  "div",
+                  {
+                    staticClass: "alert alert-primary",
+                    attrs: { role: "alert" }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Already subscribed!\n                    "
+                    )
+                  ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.email_sent_info
+              ? _c(
+                  "div",
+                  {
+                    staticClass: "alert alert-primary",
+                    attrs: { role: "alert" }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Check your email to reactivate subscription.\n                        "
+                    ),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-default",
+                        on: {
+                          click: function($event) {
+                            _vm.email_sent_info = false
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    )
+                  ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.reactivate_question
+              ? _c(
+                  "div",
+                  {
+                    staticClass: "alert alert-primary",
+                    attrs: { role: "alert" }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Do you want to reactivate account?\n                        "
+                    ),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        on: {
+                          click: function($event) {
+                            return _vm.reactivate()
+                          }
+                        }
+                      },
+                      [_vm._v("Yes")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-default",
+                        on: {
+                          click: function($event) {
+                            _vm.reactivate_question = false
+                          }
+                        }
+                      },
+                      [_vm._v("No")]
+                    )
+                  ]
+                )
+              : _vm._e(),
+            _vm._v(" "),
             _c(
               "form",
               { staticClass: "form-group", on: { submit: _vm.validateForm } },
               [
-                _c("label", [_vm._v("Email address")]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.email,
-                      expression: "email"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { placeholder: "someone@mail.com" },
-                  domProps: { value: _vm.email },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.showPayment,
+                        expression: "!showPayment"
                       }
-                      _vm.email = $event.target.value
-                    }
-                  }
-                }),
+                    ]
+                  },
+                  [
+                    _c("label", [_vm._v("Email address")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.email,
+                          expression: "email"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { placeholder: "someone@mail.com" },
+                      domProps: { value: _vm.email },
+                      on: {
+                        keyup: _vm.validateEmail,
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.email = $event.target.value
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.error
+                      ? _c(
+                          "small",
+                          { staticClass: "form-text text-danger text-center" },
+                          [_vm._v(_vm._s(_vm.error))]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("input", {
+                      staticClass: "btn btn-primary float-right mt-2",
+                      attrs: {
+                        disabled: _vm.error != null,
+                        type: "submit",
+                        value: "Subscribe"
+                      }
+                    })
+                  ]
+                ),
                 _vm._v(" "),
-                _vm.error
-                  ? _c(
-                      "small",
-                      { staticClass: "form-text text-danger text-center" },
-                      [_vm._v(_vm._s(_vm.error))]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "btn btn-primary float-right mt-2",
-                  attrs: { type: "submit", value: "Subscribe" }
-                })
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.showPayment,
+                        expression: "showPayment"
+                      }
+                    ]
+                  },
+                  [_c("div", { attrs: { id: "paypal-button-container" } })]
+                )
               ]
             )
           ])
@@ -19574,16 +19814,7 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-12" }, [_c("h1", [_vm._v("Welcome")])])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -34771,6 +35002,90 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Homepage_vue_vue_type_template_id_7f033e59___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Homepage_vue_vue_type_template_id_7f033e59___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/paypal-integration.js":
+/*!********************************************!*\
+  !*** ./resources/js/paypal-integration.js ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return PayPalIntegration; });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var PayPalIntegration =
+/*#__PURE__*/
+function () {
+  function PayPalIntegration() {
+    _classCallCheck(this, PayPalIntegration);
+  }
+
+  _createClass(PayPalIntegration, null, [{
+    key: "render",
+    value: function render(_ref) {
+      var _ref$container_id = _ref.container_id,
+          container_id = _ref$container_id === void 0 ? "#paypal-button-container" : _ref$container_id,
+          _ref$onApprove = _ref.onApprove,
+          _onApprove = _ref$onApprove === void 0 ? function () {} : _ref$onApprove,
+          payload = _ref.payload;
+
+      paypal.Buttons({
+        createOrder: function createOrder() {
+          return fetch('/api/paypal/order/create', {
+            method: 'post',
+            headers: {
+              'content-type': 'application/json'
+            }
+          }).then(function (res) {
+            return res.json();
+          }).then(function (res) {
+            console.log(res);
+
+            if (res.error) {
+              console.log(res.msg);
+              return;
+            } else {
+              return res.id;
+            }
+          });
+        },
+        onApprove: function onApprove(data) {
+          return fetch('/api/paypal/order/capture', {
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify(_objectSpread({}, payload, {
+              order_id: data.orderID
+            })),
+            method: 'post'
+          }).then(function (res) {
+            return res.json();
+          }).then(function (details) {
+            _onApprove(details);
+          });
+        }
+      }).render(container_id);
+    }
+  }]);
+
+  return PayPalIntegration;
+}();
 
 
 
