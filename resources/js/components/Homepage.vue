@@ -43,6 +43,7 @@
 <script>
 
 import PayPalIntegration from '@/js/paypal-integration';
+import EmailValidator from '@/js/email-validator';
 
 export default {
     name: "homepage",
@@ -65,7 +66,7 @@ export default {
         validateEmail: function(){
             if(!this.email){
                 this.error = 'Email required.';
-            }else if (!this.validEmail(this.email)) {
+            }else if (!EmailValidator.validEmail(this.email)) {
                 this.error = 'Valid email required.';
             }else{
                 this.error = null;
@@ -76,7 +77,7 @@ export default {
             this.subscribed = false;
             this.reactivate_question = false;
             if(!this.error){
-                fetch('api/user/check', {
+                fetch('/api/user/check', {
                     headers: {
                         'content-type': 'application/json'
                     },
@@ -122,7 +123,7 @@ export default {
             });
         },
         reactivate(){
-            fetch('api/user/require-reactivation', {
+            fetch('/api/user/require-reactivation', {
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -137,10 +138,6 @@ export default {
                 this.email_sent_info = false;
                 console.log(data);
             });
-        },
-        validEmail: function (email) {
-            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(email);
         }
     },
     mounted: function(){

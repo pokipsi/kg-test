@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/admin-panel/{any?}', function () {
+    return view('welcome');
+});
+
 Route::get('user/unsubscribe/{id}', "UserController@unsubscribe")->name('unsubscribe')->middleware('signed');
 Route::get('user/reactivate/{id}', "UserController@reactivate")->name('reactivate')->middleware('signed');
 Route::get('user/reactivated', function(){
