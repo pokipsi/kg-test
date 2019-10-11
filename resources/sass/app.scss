@@ -1,5 +1,7 @@
 @import './bootstrap.scss';
-
+html {
+    overflow-y: scroll;
+}
 .wrapper{
     padding: 10px;
     background-color: #e5e8eb;

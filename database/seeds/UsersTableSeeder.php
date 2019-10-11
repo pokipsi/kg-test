@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class UsersTableSeeder extends Seeder
@@ -14,35 +12,29 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            'email' => Str::random(10).'@gmail.com',
-            'password' => bcrypt('password'),
-            'admin' => true
+
+        $user = factory(App\User::class)->create([
+            'admin' => true,
+            'email' => 'admin@gmail.com'
         ]);
 
-        DB::table('users')->insert([
-            'email' => Str::random(10).'@gmail.com',
-            'password' => bcrypt('password')
+        $user = factory(App\User::class)->create();
+
+        $user = factory(App\User::class)->create([
+            'subscribed' => true
         ]);
 
-        DB::table('users')->insert([
-            'email' => Str::random(10).'@gmail.com',
-            'password' => bcrypt('password'),
-            'subscribed' => true,
-        ]);
-
-        DB::table('users')->insert([
-            'email' => Str::random(10).'@gmail.com',
-            'password' => bcrypt('password'),
+        $user = factory(App\User::class)->create([
             'subscribed' => true,
             'deleted_at' => Carbon::now()
         ]);
 
-        DB::table('users')->insert([
-            'email' => Str::random(10).'@gmail.com',
-            'password' => bcrypt('password'),
+        $user = factory(App\User::class)->create([
             'subscribed' => true,
             'required_reactivation' => true
         ]);
+
+        // $user = factory(App\User::class, 50)->create();
+
     }
 }

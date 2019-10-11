@@ -14,6 +14,13 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        // return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'subscribed' => $this->subscribed == 1,
+            'required_reactivation' => $this->required_reactivation == 1,
+            'deleted' => $this->deleted_at != null
+        ];
     }
 }
