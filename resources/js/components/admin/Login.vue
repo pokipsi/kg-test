@@ -65,7 +65,6 @@ export default {
                 this.login(this.email, this.password, (data) => {
                     if(data.error){
                         this.error = true;
-                        console.log("Error");
                     }else{
                         this.$emit('login-submitted', {access_token: data.access_token});
                     }

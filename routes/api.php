@@ -20,7 +20,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/test', 'AuthController@test');
 
-Route::get('users', "UserController@index");
+Route::middleware('auth:api')->get('users', "UserController@index");
+// Route::get('users', "UserController@index");
+
+Route::middleware('auth:api')->get('quotes', "QuoteController@index");
+
+
 Route::post('user/check', "UserController@check");
 Route::post('user/register', "UserController@register");
 Route::post('user/subscribe', "UserController@subscribe");

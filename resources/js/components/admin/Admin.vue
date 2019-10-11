@@ -1,12 +1,34 @@
 <template>
     <div>
         <div v-if="loggedIn">
-            <router-link to="/admin-panel/users">Users</router-link>
-            <router-link to="/admin-panel/quotes">Quotes</router-link>
-            <button @click="logout">Logout</button>
-            <keep-alive>
-                <router-view></router-view>
-            </keep-alive>
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <a class="navbar-brand" href="/admin-panel">KG Admin Panel</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <router-link class="nav-link" to="/admin-panel/users" @invalid-token="logout">Users</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" to="/admin-panel/quotes" @invalid-token="logout">Quotes</router-link>
+                        </li>
+                    </ul>
+                    <form class="form-inline">
+                        <button class="btn btn-primary" @click="logout">Logout</button>
+                    </form>
+                    
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <keep-alive>
+                            <router-view></router-view>
+                        </keep-alive>
+                    </div>
+                </div>
+            </div>
+            
         </div>
         <Login v-else @login-submitted="login"></Login>
     </div>
@@ -22,7 +44,12 @@ export default {
     name: "admin",
     data(){
         return{
-            loggedIn: false
+            
+        }
+    },
+    computed: {
+        loggedIn: function(){
+            return this.$store.getters.loggedIn;
         }
     },
     components: {
@@ -31,20 +58,16 @@ export default {
     methods: {
         login: function(value){
             localStorage.setItem('access_token', value.access_token);
-            this.loggedIn = true;
+            this.$store.commit('updateLoggedIn', { loggedIn: true});
         },
         logout: function(){
             localStorage.removeItem('access_token');
-            this.loggedIn = false;
+            this.$store.commit('updateLoggedIn', { loggedIn: false});
         }
     },
     mounted(){
         let token = localStorage.getItem('access_token');
-        if(token){
-            this.loggedIn = true;
-        }else{
-            this.loggedIn = false;
-        }
+        this.$store.commit('updateLoggedIn', { loggedIn: !!token});
     }
 }
 </script>

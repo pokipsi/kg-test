@@ -1,43 +1,46 @@
 <template>
-    <div class="row justify-content-center">
-        <div class="col-sm-12 col-md-8 col-lg-6 mt-5 ">
-            <div class="row">
-                <div class="col-12">
-                    <h1>{{headerText}}</h1>
-                </div>
-            </div>
-            <div class="wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-md-8 col-lg-6 mt-5 ">
                 <div class="row">
                     <div class="col-12">
-                        <div class="alert alert-primary" role="alert" v-if="subscribed">
-                            Already subscribed!
-                        </div>
-                        <div class="alert alert-primary" role="alert" v-if="email_sent_info">
-                            Check your email to reactivate subscription.
-                            <button class="btn btn-default" @click="email_sent_info = false">Close</button>
-                        </div>
-                        <div class="alert alert-primary" role="alert" v-if="reactivate_question">
-                            Do you want to reactivate account?
-                            <button class="btn btn-primary" @click="reactivate()">Yes</button>
-                            <button class="btn btn-default" @click="reactivate_question = false">No</button>
-                        </div>
-                        <form class="form-group" @submit="validateForm">
-                            <div v-show="!showPayment">
-                                <label>Email address</label>
-                                <input class="form-control" placeholder="someone@mail.com" v-model="email" @keyup="validateEmail">
-                                <small class="form-text text-danger text-center" v-if="error">{{ error }}</small>
-                                <input class="btn btn-primary float-right mt-2" v-bind:disabled="error != null" type="submit" value="Subscribe">
+                        <h1>{{headerText}}</h1>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-primary" role="alert" v-if="subscribed">
+                                Subscribed!
                             </div>
-                            <div v-show="showPayment">
-                                <div id="paypal-button-container"></div>
+                            <div class="alert alert-primary" role="alert" v-if="email_sent_info">
+                                Check your email to reactivate subscription.
+                                <button class="btn btn-default" @click="email_sent_info = false">Close</button>
                             </div>
-                            
-                        </form>
+                            <div class="alert alert-primary" role="alert" v-if="reactivate_question">
+                                Do you want to reactivate account?
+                                <button class="btn btn-primary" @click="reactivate()">Yes</button>
+                                <button class="btn btn-default" @click="reactivate_question = false">No</button>
+                            </div>
+                            <form class="form-group" @submit="validateForm">
+                                <div v-show="!showPayment">
+                                    <label>Email address</label>
+                                    <input class="form-control" placeholder="someone@mail.com" v-model="email" @keyup="validateEmail">
+                                    <small class="form-text text-danger text-center" v-if="error">{{ error }}</small>
+                                    <input class="btn btn-primary float-right mt-2" v-bind:disabled="error != null" type="submit" value="Subscribe">
+                                </div>
+                                <div v-show="showPayment">
+                                    <div id="paypal-button-container"></div>
+                                </div>
+                                
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
 </template>
 
 <script>
@@ -135,7 +138,7 @@ export default {
             }).then(data => data.json()).then(data => {
                 this.user = null;
                 this.reactivate_question = false;
-                this.email_sent_info = false;
+                this.email_sent_info = true;
                 console.log(data);
             });
         }
